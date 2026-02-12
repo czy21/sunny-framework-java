@@ -3,11 +3,13 @@ plugins {
     id 'common.build' apply false
 }
 
-def bomName = "sunny-framework-bom"
-def bundleName = "sunny-framework-bundle"
+def specialModules  = [
+        "sunny-framework-bom",
+        "sunny-framework-bundle",
+        "sunny-framework-test"
+]
 
 subprojects {
-    apply plugin: 'maven-publish'
     apply plugin: 'io.spring.dependency-management'
 
     group = 'com.sunny'
@@ -24,12 +26,12 @@ subprojects {
 
     apply from: "${project.rootDir}/dependency.gradle"
 
-    if (name != bomName) {
+    if (!specialModules.contains(name)) {
         apply plugin: 'java-library'
         apply plugin: 'common.build'
+        apply plugin: "spring.build"
+
+        apply plugin: 'maven-publish'
         apply plugin: "publish.build"
-        if (name != bundleName) {
-            apply plugin: "spring.build"
-        }
     }
 }

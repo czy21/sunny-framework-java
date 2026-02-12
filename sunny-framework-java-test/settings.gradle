@@ -1,7 +1,0 @@
-pluginManagement {
-    plugins {
-        id 'org.springframework.boot' version "3.4.0"
-    }
-}
-
-includeBuild("../sunny-framework")

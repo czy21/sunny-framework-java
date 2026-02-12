@@ -1,3 +1,9 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id "publish.build"
+}
+
 dependencies {
     api project(":sunny-framework-cache")
     api project(":sunny-framework-db")
