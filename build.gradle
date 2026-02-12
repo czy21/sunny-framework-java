@@ -5,7 +5,6 @@ plugins {
 
 def specialModules  = [
         "sunny-framework-bom",
-        "sunny-framework-bundle",
         "sunny-framework-test"
 ]
 
