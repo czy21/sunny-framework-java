@@ -1,0 +1,6 @@
+dependencies {
+    api project(":sunny-framework-cache")
+    api project(":sunny-framework-db")
+    api project(":sunny-framework-doc")
+    api project(":sunny-framework-web")
+}

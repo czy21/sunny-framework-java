@@ -1,0 +1,35 @@
+plugins {
+    id 'org.springframework.boot' apply false
+    id 'common.build' apply false
+}
+
+def bomName = "sunny-framework-bom"
+def bundleName = "sunny-framework-bundle"
+
+subprojects {
+    apply plugin: 'maven-publish'
+    apply plugin: 'io.spring.dependency-management'
+
+    group = 'com.sunny'
+    version = '3.0.0-SNAPSHOT'
+
+    dependencyManagement {
+        generatedPomCustomization {
+            enabled = false
+        }
+        imports {
+            mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        }
+    }
+
+    apply from: "${project.rootDir}/dependency.gradle"
+
+    if (name != bomName) {
+        apply plugin: 'java-library'
+        apply plugin: 'common.build'
+        apply plugin: "publish.build"
+        if (name != bundleName) {
+            apply plugin: "spring.build"
+        }
+    }
+}

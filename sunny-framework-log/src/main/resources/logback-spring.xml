@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name"/>
+    <springProperty scope="context" name="LOGSTASH_ENABLED" source="logstash.enabled" defaultValue="false"/>
+    <springProperty scope="context" name="LOGSTASH_ADDRESS" source="logstash.address" defaultValue="127.0.0.1:4560"/>
+
+    <condition class="ch.qos.logback.core.boolex.PropertyEqualityCondition">
+        <key>LOGSTASH_ENABLED</key>
+        <value>true</value>
+    </condition>
+    <if>
+        <then>
+            <appender name="stash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+                <destination>${LOGSTASH_ADDRESS}</destination>
+                <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                    <providers>
+                        <timestamp>
+                            <timeZone>Asia/Shanghai</timeZone>
+                        </timestamp>
+                        <pattern>
+                            <pattern>
+                                {
+                                "service": "${APP_NAME:-}",
+                                "level": "%level",
+                                "pid": "${PID:-}",
+                                "thread": "%thread",
+                                "logger": "%logger{40}",
+                                "message": "%message",
+                                "exception": "%exception-conversion-word"
+                                }
+                            </pattern>
+                        </pattern>
+                    </providers>
+                </encoder>
+            </appender>
+            <root level="INFO">
+                <appender-ref ref="stash"/>
+            </root>
+        </then>
+    </if>
+</configuration>

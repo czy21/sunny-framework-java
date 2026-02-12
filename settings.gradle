@@ -1,0 +1,24 @@
+pluginManagement {
+    includeBuild("./sunny-framework-gradle")
+    def props = new Properties()
+    file("./version.properties").withInputStream {
+        props.load(it)
+    }
+    plugins {
+        id 'org.springframework.boot' version props["springBootVersion"]
+    }
+}
+
+// spring
+include("sunny-framework-bom")
+include("sunny-framework-bundle")
+include("sunny-framework-cache")
+include("sunny-framework-core")
+include("sunny-framework-db")
+include('sunny-framework-doc')
+include("sunny-framework-file")
+include("sunny-framework-job")
+include("sunny-framework-log")
+include("sunny-framework-web")
+include("sunny-framework-webflux")
+include("sunny-framework-statemachine-kryo")

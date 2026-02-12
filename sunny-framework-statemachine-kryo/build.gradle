@@ -1,0 +1,4 @@
+dependencies {
+    api 'org.springframework.statemachine:spring-statemachine-core'
+    api 'com.esotericsoftware:kryo'
+}

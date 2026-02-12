@@ -1,0 +1,13 @@
+tasks.named('bootJar') {
+
+    destinationDirectory = getLayout().getBuildDirectory()
+    archiveBaseName = 'api'
+    archiveVersion = ''
+
+    doFirst {
+        copy {
+            from file("config")
+            into getLayout().buildDirectory.dir("config")
+        }
+    }
+}

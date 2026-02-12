@@ -1,0 +1,2 @@
+com.sunny.framework.db.DBAutoConfigure
+com.github.pagehelper.autoconfigure.PageHelperAutoConfiguration

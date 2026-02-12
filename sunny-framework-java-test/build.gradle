@@ -1,0 +1,48 @@
+plugins {
+    id 'java-library'
+    id "org.springframework.boot"
+}
+
+group = 'com.sunny'
+version = '3.0.0-SNAPSHOT'
+
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+    }
+}
+
+apply from: "../sunny-framework/dependency.gradle"
+
+apply from: "../sunny-framework/buildSrc/src/main/groovy/common.build.gradle"
+apply from: "../sunny-framework/buildSrc/src/main/groovy/lombok.build.gradle"
+apply from: "../sunny-framework/buildSrc/src/main/groovy/spring.build.gradle"
+
+dependencies {
+
+    implementation("com.sunny:sunny-framework-web") {
+        exclude group: "com.alibaba.cloud", module: "spring-cloud-starter-alibaba-nacos-config"
+        exclude group: "com.alibaba.cloud", module: "spring-cloud-starter-alibaba-nacos-discovery"
+    }
+
+    testImplementation("com.sunny:sunny-framework-bundle") {
+        exclude group: "com.alibaba.cloud", module: "spring-cloud-starter-alibaba-nacos-config"
+        exclude group: "com.alibaba.cloud", module: "spring-cloud-starter-alibaba-nacos-discovery"
+    }
+
+    testImplementation "org.springframework.data:spring-data-jdbc"
+
+}
+
+
+tasks.findAll { it -> it.name in ["build", "clean"] || it.name.startsWith("publishAllPublications") }.each { t ->
+    "$t.name" {
+        gradle.getIncludedBuilds().each { p ->
+            p.properties.get("target").availableModules.findAll { m -> m.right.projectPath != ":" }.each { m ->
+                dependsOn p.task(":${m.right.projectName}:${t.name}")
+            }
+        }
+    }
+}

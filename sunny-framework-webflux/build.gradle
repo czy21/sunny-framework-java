@@ -1,0 +1,14 @@
+dependencies {
+    api project(":sunny-framework-core")
+    api project(":sunny-framework-log")
+    api "org.springframework.boot:spring-boot-starter-aop"
+    api "org.springframework.boot:spring-boot-starter-webflux"
+    api "org.springframework.boot:spring-boot-starter-validation"
+    api "org.springframework.boot:spring-boot-starter-actuator",
+            "io.micrometer:micrometer-registry-prometheus",
+            "io.github.mweirauch:micrometer-jvm-extras"
+    api "org.springframework.cloud:spring-cloud-starter-loadbalancer"
+    api 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config'
+    api "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery"
+
+}
