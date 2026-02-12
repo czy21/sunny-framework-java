@@ -1,17 +1,17 @@
 package com.sunny.framework.webflux;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.ext.javatime.deser.LocalDateTimeDeserializer;
+import tools.jackson.databind.ext.javatime.ser.LocalDateTimeSerializer;
+import tools.jackson.databind.module.SimpleModule;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,40 +20,22 @@ public class JacksonConfigure {
 
     public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
-    /**
-     * format to timestamp
-     * <pre>
-     * @Bean
-     * @Order(10)
-     * public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
-     * return builder -> {
-     * builder.serializerByType(LocalDateTime.class, LocalDateTimeSerializer.INSTANCE);
-     * builder.deserializerByType(LocalDateTime.class, LocalDateTimeDeserializer.INSTANCE);
-     * builder.deserializerByType(String.class, stringStdScalarDeserializer());
-     * builder.featuresToEnable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-     * };
-     * }
-     * </pre>
-     */
     @Bean
     @Order(10)
-    public Jackson2ObjectMapperBuilderCustomizer portalJacksonCustomConfig() {
+    public JsonMapperBuilderCustomizer jsonMapperBuilderCustomizer() {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
-        return (builder) -> {
-            builder.serializerByType(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
-            builder.deserializerByType(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
-            builder.dateFormat(new SimpleDateFormat(DATE_FORMAT_PATTERN));
-            builder.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-            builder.deserializerByType(String.class, stringStdScalarDeserializer());
-        };
-    }
-
-    public JsonDeserializer<String> stringStdScalarDeserializer() {
-        return new JsonDeserializer<>() {
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
+        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
+        module.addDeserializer(String.class, new ValueDeserializer<>() {
             @Override
-            public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            public String deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
                 return StringUtils.trim(p.getValueAsString());
             }
+        });
+        return (builder) -> {
+            builder.defaultDateFormat(new SimpleDateFormat(DATE_FORMAT_PATTERN));
+            builder.addModule(module);
         };
     }
 }

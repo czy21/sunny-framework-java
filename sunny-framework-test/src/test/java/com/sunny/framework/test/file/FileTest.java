@@ -1,7 +1,6 @@
 package com.sunny.framework.test.file;
 
 import com.alibaba.excel.EasyExcel;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sunny.framework.file.excel.EasyExcelProperty;
 import com.sunny.framework.file.excel.EasyExcelReader;
 import com.sunny.framework.file.excel.EasyExcelWriter;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.ResourceUtils;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class FileTest {
 
     @Autowired
-    ObjectMapper objectMapper;
+    JsonMapper jsonMapper;
     @Autowired
     StringRedisTemplate stringRedisTemplate;
     @Autowired
@@ -42,7 +42,7 @@ public class FileTest {
     @Test
     public void testReader() throws FileNotFoundException {
         File userImportFile = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "excel/user-import.xlsx");
-        EasyExcelReader<UserImport> reader = new EasyExcelReader<>(objectMapper, stringRedisTemplate, validator);
+        EasyExcelReader<UserImport> reader = new EasyExcelReader<>(jsonMapper, stringRedisTemplate, validator);
         reader.process(ctx -> {
             ctx.getRows().forEach(t -> {
                 ctx.getSuccessTotal().incrementAndGet();
@@ -60,7 +60,7 @@ public class FileTest {
     @Test
     public void testReadMap() throws FileNotFoundException {
         File userImportFile = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "excel/user-import.xlsx");
-        EasyExcelReader<Map<String, Object>> reader = new EasyExcelReader<>(objectMapper, stringRedisTemplate, validator);
+        EasyExcelReader<Map<String, Object>> reader = new EasyExcelReader<>(jsonMapper, stringRedisTemplate, validator);
         reader.nameProperty(userNameProperty).process(ctx -> {
             for (Map<String, Object> t : ctx.getRows()) {
                 Integer rowIndex = (Integer) t.get("rowIndex");
@@ -84,7 +84,7 @@ public class FileTest {
     @Test
     public void testWriteMapError() throws Exception {
         String filePath = ResourceUtils.getURL("classpath:excel/").getPath() + "user-import-error.xlsx";
-        EasyExcelWriter<Map<String, Object>> writer = new EasyExcelWriter<>(objectMapper, stringRedisTemplate);
+        EasyExcelWriter<Map<String, Object>> writer = new EasyExcelWriter<>(jsonMapper, stringRedisTemplate);
         writer.token("c9601e48754747a4a75d6e6cedc2a315");
         writer.doWrite(EasyExcel.write(filePath), userNameProperty);
     }

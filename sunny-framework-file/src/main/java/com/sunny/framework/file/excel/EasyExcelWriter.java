@@ -4,18 +4,17 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.util.StringUtils;
 import com.alibaba.excel.write.builder.ExcelWriterBuilder;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sunny.framework.file.listener.ExcelGenericDataEventListener;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.OutputStream;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -23,11 +22,11 @@ public class EasyExcelWriter<T> {
     private String token;
     private int batch = 200;
     private final StringRedisTemplate redisTemplate;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
-    public EasyExcelWriter(ObjectMapper objectMapper, StringRedisTemplate redisTemplate) {
+    public EasyExcelWriter(JsonMapper jsonMapper, StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
-        this.objectMapper = objectMapper;
+        this.jsonMapper = jsonMapper;
     }
 
     public EasyExcelWriter<T> batch(int batch) {
@@ -42,7 +41,7 @@ public class EasyExcelWriter<T> {
 
     public void doWriteGeneric(ExcelWriterBuilder writerBuilder, Class<?> rowType, Function<T, Object> rowFunc) {
         try (ExcelWriter writer = writerBuilder.build()) {
-            JavaType javaType = objectMapper.getTypeFactory().constructType(rowType);
+            JavaType javaType = jsonMapper.getTypeFactory().constructType(rowType);
             var boundListOperation = redisTemplate.boundListOps(ExcelGenericDataEventListener.DATA_KEY_PREFIX_FUNC.apply(token));
             int start = 0;
             int end = batch;
@@ -51,12 +50,8 @@ public class EasyExcelWriter<T> {
                 list = boundListOperation.range(start, end - 1);
                 List<Object> targets = Optional.ofNullable(list).orElse(List.of()).stream()
                         .map(t -> {
-                            try {
-                                T row = objectMapper.readValue(t, javaType);
-                                return rowFunc.apply(row);
-                            } catch (JsonProcessingException e) {
-                                throw new RuntimeException(e);
-                            }
+                            T row = jsonMapper.readValue(t, javaType);
+                            return rowFunc.apply(row);
                         }).collect(Collectors.toList());
                 writer.write(targets, EasyExcel.writerSheet().build());
                 start = end;
@@ -70,14 +65,10 @@ public class EasyExcelWriter<T> {
         doWriteGeneric(writerBuilder, head, row -> {
             String errorListStr = (String) redisTemplate.opsForHash().get(ExcelGenericDataEventListener.ERROR_KEY_PREFIX_FUNC.apply(token), String.valueOf(((BaseExcelModel) row).getRowIndex()));
             if (!StringUtils.isEmpty(errorListStr)) {
-                try {
-                    List<String> errors = objectMapper.readValue(errorListStr, new TypeReference<List<String>>() {
-                    });
-                    String message = String.join(";", errors);
-                    ((BaseExcelModel) row).setMessage(message);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
+                List<String> errors = jsonMapper.readValue(errorListStr, new TypeReference<List<String>>() {
+                });
+                String message = String.join(";", errors);
+                ((BaseExcelModel) row).setMessage(message);
             }
             return rowFunc.apply(row);
         });
@@ -107,13 +98,9 @@ public class EasyExcelWriter<T> {
         doWriteGeneric(writerBuilder, Map.class, row -> {
             String errorListStr = (String) redisTemplate.opsForHash().get(ExcelGenericDataEventListener.ERROR_KEY_PREFIX_FUNC.apply(token), String.valueOf(((Map<String, Object>) row).get("rowIndex")));
             if (!StringUtils.isEmpty(errorListStr)) {
-                try {
-                    List<String> errors = objectMapper.readValue(errorListStr, new TypeReference<List<String>>() {
-                    });
-                    ((Map<String, Object>) row).put("message", String.join(";", errors));
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
+                List<String> errors = jsonMapper.readValue(errorListStr, new TypeReference<List<String>>() {
+                });
+                ((Map<String, Object>) row).put("message", String.join(";", errors));
             }
             return nameHead.keySet().stream().map(t -> ((Map<String, Object>) rowFunc.apply(row)).get(t)).collect(Collectors.toList());
         });
