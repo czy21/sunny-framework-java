@@ -3,8 +3,8 @@ dependencies {
     api "org.postgresql:postgresql"
     api "com.microsoft.sqlserver:mssql-jdbc"
 
-    api "org.springframework.boot:spring-boot-starter-aop"
-
-    api 'com.baomidou:mybatis-plus-spring-boot3-starter'
-    api 'com.github.pagehelper:pagehelper'
+    api "org.springframework.boot:spring-boot-starter-aspectj"
+    api "org.springframework.boot:spring-boot-starter-jdbc"
+    api 'com.baomidou:mybatis-plus-spring-boot4-starter'
+   api 'com.github.pagehelper:pagehelper'
 }

@@ -1,0 +1,35 @@
+plugins {
+    id 'org.springframework.boot' apply false
+
+    id 'java-library'
+    id 'common.build'
+    id 'lombok.build'
+    id 'spring.build'
+}
+
+group = 'com.sunny'
+version = '4.0.0-SNAPSHOT'
+
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+    }
+}
+
+apply from: "../sunny-framework-java/dependency.gradle"
+
+dependencies {
+
+    implementation("com.sunny:sunny-framework-web") {
+        exclude group: "com.alibaba.cloud", module: "spring-cloud-starter-alibaba-nacos-config"
+        exclude group: "com.alibaba.cloud", module: "spring-cloud-starter-alibaba-nacos-discovery"
+    }
+
+    testImplementation("com.sunny:sunny-framework-bundle") {
+        exclude group: "com.alibaba.cloud", module: "spring-cloud-starter-alibaba-nacos-config"
+        exclude group: "com.alibaba.cloud", module: "spring-cloud-starter-alibaba-nacos-discovery"
+    }
+
+}

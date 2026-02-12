@@ -1,7 +1,6 @@
 dependencies {
-    api 'com.fasterxml.jackson.core:jackson-databind'
-    api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    api 'tools.jackson.core:jackson-databind'
     api "org.springframework.boot:spring-boot-starter-data-redis"
-    api "org.redisson:redisson"
+    api "org.redisson:redisson-spring-boot-starter"
     api "com.redis.om:redis-om-spring"
 }

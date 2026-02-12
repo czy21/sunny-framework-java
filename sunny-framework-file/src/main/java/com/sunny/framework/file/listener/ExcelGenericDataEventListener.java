@@ -2,8 +2,6 @@ package com.sunny.framework.file.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sunny.framework.file.excel.BaseExcelModel;
 import com.sunny.framework.file.excel.EasyExcelProperty;
 import jakarta.validation.Validator;
@@ -14,6 +12,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -28,7 +28,7 @@ public class ExcelGenericDataEventListener<T> extends AnalysisEventListener<T> {
     private final List<T> rows = new ArrayList<>();
     private final Map<Integer, List<String>> error = new TreeMap<>();
     private final Context<T> processContext = new Context<>();
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
     private final StringRedisTemplate redisTemplate;
     private int batch = 200;
     private int total = 0;
@@ -43,11 +43,11 @@ public class ExcelGenericDataEventListener<T> extends AnalysisEventListener<T> {
     public final static Function<String, String> ERROR_KEY_PREFIX_FUNC = t -> String.join(":", EXCEL_STORAGE_KEY_PREDIX, t, "error");
 
     public ExcelGenericDataEventListener(Consumer<Context<T>> processConsumer,
-                                         ObjectMapper objectMapper,
+                                         JsonMapper jsonMapper,
                                          StringRedisTemplate redisTemplate,
                                          Validator validator) {
         this.processConsumer = processConsumer;
-        this.objectMapper = objectMapper;
+        this.jsonMapper = jsonMapper;
         this.redisTemplate = redisTemplate;
         this.validator = validator;
     }
@@ -142,7 +142,7 @@ public class ExcelGenericDataEventListener<T> extends AnalysisEventListener<T> {
                     for (Map.Entry<String, EasyExcelProperty> propertyEntry : nameProperty.entrySet()) {
                         if (propertyEntry.getValue().getJavaType() != null) {
                             try {
-                                Object newVal = objectMapper.convertValue(tMap.get(propertyEntry.getKey()), propertyEntry.getValue().getJavaType());
+                                Object newVal = jsonMapper.convertValue(tMap.get(propertyEntry.getKey()), propertyEntry.getValue().getJavaType());
                                 tMap.put(propertyEntry.getKey(), newVal);
                             } catch (Exception e) {
                                 error.get(rowIndex).add(MessageFormat.format("{0}类型错误", propertyEntry.getValue().getHead().getLast()));
@@ -159,20 +159,12 @@ public class ExcelGenericDataEventListener<T> extends AnalysisEventListener<T> {
         processConsumer.accept(processContext);
         String errorKey = ERROR_KEY_PREFIX_FUNC.apply(token);
         error.entrySet().stream().filter(t -> CollectionUtils.isNotEmpty(t.getValue())).forEach(t -> {
-            try {
-                redisTemplate.opsForHash().put(errorKey, String.valueOf(t.getKey()), objectMapper.writeValueAsString(t.getValue()));
-            } catch (JsonProcessingException e) {
-                logger.error("excel存储校验失败", e);
-            }
+            redisTemplate.opsForHash().put(errorKey, String.valueOf(t.getKey()), jsonMapper.writeValueAsString(t.getValue()));
         });
         redisTemplate.expire(errorKey, expireMinutes, TimeUnit.MINUTES);
         String dataKey = DATA_KEY_PREFIX_FUNC.apply(token);
         for (T t : rows) {
-            try {
-                redisTemplate.opsForList().rightPush(dataKey, objectMapper.writeValueAsString(t));
-            } catch (JsonProcessingException e) {
-                logger.error("excel存储数据失败", e);
-            }
+            redisTemplate.opsForList().rightPush(dataKey, jsonMapper.writeValueAsString(t));
         }
         redisTemplate.expire(dataKey, expireMinutes, TimeUnit.MINUTES);
     }

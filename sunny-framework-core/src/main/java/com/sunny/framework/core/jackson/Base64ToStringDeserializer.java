@@ -1,18 +1,17 @@
 package com.sunny.framework.core.jackson;
 
-import com.fasterxml.jackson.core.Base64Variants;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import tools.jackson.core.Base64Variants;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 
-public class Base64ToStringDeserializer extends JsonDeserializer<String> {
+public class Base64ToStringDeserializer extends ValueDeserializer<String> {
 
     @Override
-    public String deserialize(JsonParser p, DeserializationContext deserializationContext) throws IOException {
+    public String deserialize(JsonParser p, DeserializationContext deserializationContext) {
         String base64 = p.getValueAsString();
         if (base64 == null || base64.isEmpty()) {
             return null;

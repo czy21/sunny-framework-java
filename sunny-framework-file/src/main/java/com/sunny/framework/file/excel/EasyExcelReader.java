@@ -2,10 +2,11 @@ package com.sunny.framework.file.excel;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.sunny.framework.file.listener.ExcelGenericDataEventListener;
 import jakarta.validation.Validator;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -18,14 +19,14 @@ public class EasyExcelReader<T> {
     private String token;
     private int batch = 200;
     private int expireMinutes = 30;
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
     private StringRedisTemplate redisTemplate;
     private Validator validator;
     private ExcelGenericDataEventListener<T> excelGenericDataEventListener;
     private Map<String, EasyExcelProperty> nameProperty;
 
-    public EasyExcelReader(ObjectMapper objectMapper, StringRedisTemplate redisTemplate, Validator validator) {
-        this.objectMapper = objectMapper;
+    public EasyExcelReader(JsonMapper jsonMapper, StringRedisTemplate redisTemplate, Validator validator) {
+        this.jsonMapper = jsonMapper;
         this.redisTemplate = redisTemplate;
         this.validator = validator;
     }
@@ -51,7 +52,7 @@ public class EasyExcelReader<T> {
 
     public EasyExcelReader<T> process(Consumer<ExcelGenericDataEventListener.Context<T>> consumer) {
         this.token = UUID.randomUUID().toString().replace("-", "");
-        this.excelGenericDataEventListener = new ExcelGenericDataEventListener<>(consumer, objectMapper, redisTemplate, validator);
+        this.excelGenericDataEventListener = new ExcelGenericDataEventListener<>(consumer, jsonMapper, redisTemplate, validator);
         this.excelGenericDataEventListener.setToken(token);
         this.excelGenericDataEventListener.setBatch(batch);
         this.excelGenericDataEventListener.setExpireMinutes(expireMinutes);

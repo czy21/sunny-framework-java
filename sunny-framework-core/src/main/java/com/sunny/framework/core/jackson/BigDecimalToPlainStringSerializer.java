@@ -1,15 +1,16 @@
 package com.sunny.framework.core.jackson;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 
-public class BigDecimalToPlainStringSerializer extends JsonSerializer<BigDecimal> {
+public class BigDecimalToPlainStringSerializer extends ValueSerializer<BigDecimal> {
+
     @Override
-    public void serialize(BigDecimal bigDecimal, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        jsonGenerator.writeString(bigDecimal.stripTrailingZeros().toPlainString());
+    public void serialize(BigDecimal value, JsonGenerator gen, SerializationContext ctxt) throws JacksonException {
+        gen.writeString(value.stripTrailingZeros().toPlainString());
     }
 }
