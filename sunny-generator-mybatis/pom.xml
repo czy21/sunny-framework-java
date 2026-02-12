@@ -6,26 +6,15 @@
 
     <groupId>com.sunny</groupId>
     <artifactId>sunny-generator-mybatis</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mybatis.generator.version>1.4.2</mybatis.generator.version>
+        <mybatis.generator.version>2.0.0</mybatis.generator.version>
+        <javaparser.version>3.28.2</javaparser.version>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.sunny</groupId>
-                <artifactId>sunny-framework-bom</artifactId>
-                <version>3.0.0-SNAPSHOT</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -34,39 +23,43 @@
             <version>${mybatis.generator.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sunny</groupId>
-            <artifactId>sunny-framework-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations-jakarta</artifactId>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-core</artifactId>
+            <version>${javaparser.version}</version>
         </dependency>
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>generator/**</exclude>
+                    <exclude>generator.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.2.0</version>
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>${project.basedir}/src/main/java/generator</directory>
-                            <includes>
-                                <include>**/*</include>
-                            </includes>
+                            <directory>src/main/java/generator</directory>
                         </fileset>
                         <fileset>
-                            <directory>${project.basedir}/src/main/resources/generator</directory>
-                            <includes>
-                                <include>**/*</include>
-                            </includes>
+                            <directory>src/main/resources/generator</directory>
                         </fileset>
                     </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>generator/**</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -86,10 +79,9 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <!--运行时显示详细的信息-->
                     <verbose>true</verbose>
-                    <overwrite>true</overwrite>
-                    <configurationFile>${project.basedir}/src/main/resources/generatorConfig.xml</configurationFile>
+                    <javaMergeEnabled>true</javaMergeEnabled>
+                    <configurationFile>${project.basedir}/src/main/resources/generator.xml</configurationFile>
                 </configuration>
             </plugin>
         </plugins>

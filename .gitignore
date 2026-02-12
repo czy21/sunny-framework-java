@@ -65,3 +65,5 @@ __pycache__/
 
 # cicd
 .jenkins
+
+sunny-generator-mybatis/src/main/resources/generator.properties
