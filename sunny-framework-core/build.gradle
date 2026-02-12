@@ -1,0 +1,14 @@
+plugins {
+    id "lombok.build"
+}
+
+dependencies {
+    api "org.apache.commons:commons-lang3"
+    api "org.apache.commons:commons-collections4"
+    api 'com.fasterxml.jackson.core:jackson-databind'
+    api 'com.github.pagehelper:pagehelper'
+
+    api "org.graalvm.truffle:truffle-runtime"
+    api "org.graalvm.js:js-language"
+    api "org.graalvm.python:python-language"
+}

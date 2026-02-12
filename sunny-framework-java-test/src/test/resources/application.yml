@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    dynamic:
+      datasource:
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          jdbc-url: jdbc:mysql://${db-host}:3306/sunny_test?user=${db-user}&password=${db-pass}&rewriteBatchStatements=true&useCursorFetch=true
+          minimum-idle: 5
+          maximum-pool-size: 20
+          max-lifetime: 1800000
+          connection-test-query: select 1
+          connection-timeout: 30000
+        pgsql:
+          driver-class-name: org.postgresql.Driver
+          jdbc-url: jdbc:postgresql://${db-host}:5432/sunny_test?user=postgres&password=${db-pass}
+          minimum-idle: 5
+          maximum-pool-size: 20
+          max-lifetime: 1800000
+          connection-test-query: select 1
+          connection-timeout: 30000
+        mssql:
+          driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+          jdbc-url: jdbc:sqlserver://${db-host}:1433;databaseName=sunny_test;user=sa;password=${db-pass};encrypt=false
+          minimum-idle: 5
+          maximum-pool-size: 20
+          max-lifetime: 1800000
+          connection-test-query: select 1
+          connection-timeout: 30000
+  data:
+    redis:
+      cluster:
+        nodes: ${redis-nodes}
+      password: ${db-pass}
+  profiles:
+    include: test
+  cloud:
+    compatibility-verifier:
+      enabled: false
+logging:
+  level:
+    org.springframework.jdbc.core.JdbcTemplate: debug
+    com.sunny.framework.test: debug

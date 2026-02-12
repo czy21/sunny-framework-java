@@ -1,0 +1,61 @@
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <properties resource="generator.properties"/>
+    <context id="simple" targetRuntime="MyBatis3" defaultModelType="flat">
+        <plugin type="com.sunny.generator.mybatis.plugins.LombokPlugin">
+            <property name="builder" value="true"/>
+            <property name="noArgsConstructor" value="true"/>
+            <property name="allArgsConstructor" value="true"/>
+            <property name="accessors" value="true"/>
+            <property name="accessors.chain" value="true"/>
+        </plugin>
+        <plugin type="com.sunny.generator.mybatis.plugins.DomainPlugin">
+            <property name="mybatisPlus" value="true"/>
+            <property name="openapi3" value="true"/>
+            <property name="openapi3InModel" value="false"/>
+            <property name="openapiExcludeColumns" value="id,create_time,create_user,update_time,update_user,deleted"/>
+        </plugin>
+        <commentGenerator type="com.sunny.generator.mybatis.internal.CommentGenerator"/>
+        <jdbcConnection driverClass="${jdbc.driver}" connectionURL="${jdbc.url}" userId="${jdbc.username}" password="${jdbc.password}">
+            <property name="nullCatalogMeansCurrent" value="true"/>
+        </jdbcConnection>
+        <javaTypeResolver type="com.sunny.generator.mybatis.internal.types.JavaTypeResolverImpl">
+            <!--是否使用bigDecimal，默认false。
+                false，把JDBC DECIMAL 和 NUMERIC 类型解析为 Integer
+                true，把JDBC DECIMAL 和 NUMERIC 类型解析为java.math.BigDecimal-->
+            <property name="forceBigDecimals" value="true"/>
+            <!--默认 false
+                false，将所有 JDBC 的时间类型解析为 java.util.Date
+                true，将 JDBC 的时间类型按如下规则解析
+                    DATE	                -> java.time.LocalDate
+                    TIME	                -> java.time.LocalTime
+                    TIMESTAMP               -> java.time.LocalDateTime
+                    TIME_WITH_TIMEZONE  	-> java.time.OffsetTime
+                    TIMESTAMP_WITH_TIMEZONE	-> java.time.OffsetDateTime
+                -->
+            <property name="useJSR310Types" value="true"/>
+        </javaTypeResolver>
+
+<!--        <javaModelGenerator targetPackage="generator.model" targetProject="src/main/java"/>-->
+<!--        <sqlMapGenerator targetPackage="generator" targetProject="src/main/resources"/>-->
+<!--        <javaClientGenerator type="XMLMAPPER" targetPackage="generator.mapper" targetProject="src/main/java"/>-->
+
+<!--        <table tableName="sys_%"-->
+<!--               enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false" enableUpdateByExample="false" selectByExampleQueryId="true">-->
+<!--            <domainObjectRenamingRule searchString="^Sys(.*)$" replaceString="$1"/>-->
+<!--        </table>-->
+
+<!--        <table tableName="sys_file" domainObjectName="FilePO" mapperName="FileMapper"-->
+<!--               enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false" enableUpdateByExample="false" selectByExampleQueryId="true">-->
+<!--        </table>-->
+
+<!--        use mybatis-->
+        <javaModelGenerator targetPackage="com.sunny.wx.unify.domain.model" targetProject="C:/Users/bruce/Desktop/dev/gitea-project/wx-unify/service/wx-unify-domain/src/main/java"/>
+
+        <table tableName="%">
+        </table>
+
+    </context>
+</generatorConfiguration>

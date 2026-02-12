@@ -1,0 +1,9 @@
+plugins {
+    id "lombok.build"
+}
+dependencies {
+    api "com.xuxueli:xxl-job-core"
+    api "org.springframework:spring-web"
+    api "org.springframework.cloud:spring-cloud-openfeign-core"
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+}

@@ -1,0 +1,6 @@
+dependencies {
+    implementation "org.mapstruct:mapstruct", "org.projectlombok:lombok"
+    annotationProcessor "org.mapstruct:mapstruct-processor", "org.projectlombok:lombok", "org.projectlombok:lombok-mapstruct-binding"
+    testImplementation "org.mapstruct:mapstruct", "org.projectlombok:lombok"
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor", "org.projectlombok:lombok", "org.projectlombok:lombok-mapstruct-binding"
+}

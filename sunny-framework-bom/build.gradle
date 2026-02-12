@@ -1,0 +1,33 @@
+plugins {
+    id "java-platform"
+}
+
+publishing {
+    publications {
+        mavenPlatform(MavenPublication) {
+            from components.javaPlatform
+        }
+    }
+}
+
+dependencyManagement {
+    generatedPomCustomization {
+        enabled = true
+    }
+}
+
+dependencies {
+    constraints {
+        api project(":sunny-framework-bundle")
+        api project(":sunny-framework-core")
+        api project(":sunny-framework-cache")
+        api project(":sunny-framework-db")
+        api project(":sunny-framework-doc")
+        api project(":sunny-framework-file")
+        api project(":sunny-framework-job")
+        api project(":sunny-framework-log")
+        api project(":sunny-framework-web")
+        api project(":sunny-framework-webflux")
+        api project(":sunny-framework-statemachine-kryo")
+    }
+}

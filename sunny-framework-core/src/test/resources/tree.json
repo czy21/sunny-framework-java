@@ -1,0 +1,58 @@
+[
+  {
+    "label": "a",
+    "value": "a",
+    "parentValue": null,
+    "sort": 10
+  },
+  {
+    "label": "b",
+    "value": "b",
+    "parentValue": null
+  },
+  {
+    "label": "c",
+    "value": "c",
+    "parentValue": null,
+    "sort": 4
+  },
+  {
+    "label": "d",
+    "value": "d",
+    "parentValue": null,
+    "sort": 9
+  },
+  {
+    "label": "a1",
+    "value": "a1",
+    "parentValue": "a",
+    "sort": 9
+  },
+  {
+    "label": "a2",
+    "value": "a2",
+    "parentValue": "a",
+    "sort": 20
+  },
+  {
+    "label": "a3",
+    "value": "a3",
+    "parentValue": "a",
+    "sort": 16
+  },
+  {
+    "label": "a3-1",
+    "value": "a3-1",
+    "parentValue": "a3"
+  },
+  {
+    "label": "a3-2",
+    "value": "a3-2",
+    "parentValue": "a3"
+  },
+  {
+    "label": "a3-2-1",
+    "value": "a3-2-1",
+    "parentValue": "a3-2"
+  }
+]

@@ -1,0 +1,26 @@
+java {
+    withSourcesJar()
+}
+
+jar {
+    into("META-INF/maven/${project.group}/${project.name}") {
+        from { generatePomFileForMavenJavaPublication }
+        rename "pom-default.xml", "pom.xml"
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+        }
+    }
+}

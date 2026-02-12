@@ -1,0 +1,2 @@
+com.sunny.framework.cache.CacheAutoConfigure
+com.sunny.framework.cache.RedissonAutoConfigure
