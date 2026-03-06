@@ -1,4 +1,4 @@
-configurations.all {
+configurations.configureEach {
     resolutionStrategy.cacheChangingModulesFor 0, 'minutes'
 }
 
@@ -7,7 +7,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.compilerArgs.add("-parameters")
 }

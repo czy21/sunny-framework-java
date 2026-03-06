@@ -1,1 +1,3 @@
 com.sunny.framework.cache.CacheAutoConfigure
+com.sunny.framework.cache.RedissonAutoConfiguration
+com.sunny.framework.cache.RedisOMAutoConfiguration

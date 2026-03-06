@@ -2,7 +2,6 @@ package com.sunny.framework.cache;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-
 @ConfigurationProperties(prefix = "spring.redis.redisson")
 public class RedissonProperties {
 

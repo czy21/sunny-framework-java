@@ -19,9 +19,9 @@ import tools.jackson.databind.json.JsonMapper;
 import java.time.Duration;
 import java.util.Optional;
 
+@Configuration(proxyBeanMethods = false)
 @PropertySource("classpath:sunny-common-cache-default.properties")
 @EnableCaching
-@Configuration
 public class CacheAutoConfigure {
 
     JsonMapper jsonMapper;
