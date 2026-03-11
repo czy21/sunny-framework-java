@@ -19,7 +19,7 @@ import org.springframework.web.util.pattern.PathPatternParser;
 
 @PropertySource("classpath:sunny-common-web-default.properties")
 @EnableWebMvc
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @Import({JacksonConfigure.class, FeignConfigure.class, GlobalExceptionHandler.class})
 public class WebAutoConfigure implements WebMvcConfigurer {
 

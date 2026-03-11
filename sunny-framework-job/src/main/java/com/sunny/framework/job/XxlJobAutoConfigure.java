@@ -13,7 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource(value = "classpath:sunny-common-job-default.properties")
 @ConditionalOnProperty(prefix = XxlJobProperties.PREFIX, name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(XxlJobProperties.class)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class XxlJobAutoConfigure {
     private static final Logger logger = LoggerFactory.getLogger(XxlJobAutoConfigure.class);
 

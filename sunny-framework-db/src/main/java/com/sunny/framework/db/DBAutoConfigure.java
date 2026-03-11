@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @PropertySource("classpath:sunny-common-db-default.properties")
 @AutoConfigureBefore(value = DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(value = {DynamicDataSourceProperties.class})

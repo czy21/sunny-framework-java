@@ -16,7 +16,7 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 
 @PropertySource("classpath:sunny-common-webflux-default.properties")
 @EnableWebFlux
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class WebfluxAutoConfigure implements WebFluxConfigurer {
 
     @Override

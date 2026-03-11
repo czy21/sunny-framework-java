@@ -42,7 +42,7 @@ import java.util.List;
  *
  * @author liuzh
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(SqlSessionFactory.class)
 @EnableConfigurationProperties({PageHelperProperties.class, PageHelperStandardProperties.class})
 @AutoConfigureAfter(MybatisPlusAutoConfiguration.class)
