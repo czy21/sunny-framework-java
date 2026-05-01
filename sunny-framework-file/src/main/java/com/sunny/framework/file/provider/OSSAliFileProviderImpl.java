@@ -10,22 +10,20 @@ import com.sunny.framework.file.model.FileResult;
 import com.sunny.framework.file.repository.FileRepository;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URI;
-
 public class OSSAliFileProviderImpl extends AbstractFileProvider implements FileProvider {
 
     OSS client;
 
-    public OSSAliFileProviderImpl(FiletProperties.Target config, FileRepository fileRepository) {
-        super(config, fileRepository);
-        client = OSSClientBuilder.create().endpoint(config.getRoot())
-                .credentialsProvider(CredentialsProviderFactory.newDefaultCredentialProvider(config.getAccessKey(), config.getAccessKeySecret()))
+    public OSSAliFileProviderImpl(FiletProperties.Target target, FileRepository fileRepository) {
+        super(target, fileRepository);
+        client = OSSClientBuilder.create().endpoint(target.getRoot())
+                .credentialsProvider(CredentialsProviderFactory.newDefaultCredentialProvider(target.getAccessKey(), target.getAccessKeySecret()))
                 .build();
     }
 
     @Override
     public FileResult upload(MultipartFile file, FileEntity fileEntity, FileResult fileResult) throws Exception {
-        PutObjectRequest putObjectRequest = new PutObjectRequest(config.getPath(), fileEntity.getPath(), file.getInputStream());
+        PutObjectRequest putObjectRequest = new PutObjectRequest(target.getPath(), fileEntity.getPath(), file.getInputStream());
         client.putObject(putObjectRequest);
         return fileResult;
     }

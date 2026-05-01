@@ -9,6 +9,8 @@ dependencies {
     api 'org.springframework.data:spring-data-redis'
     api "jakarta.validation:jakarta.validation-api"
     api 'org.springframework:spring-web'
+
+    api "software.amazon.awssdk:s3"
     api 'io.minio:minio'
     api 'com.aliyun.oss:aliyun-sdk-oss'
 }

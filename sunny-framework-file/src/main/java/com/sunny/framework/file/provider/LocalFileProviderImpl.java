@@ -13,13 +13,13 @@ import java.io.File;
 @Slf4j
 public class LocalFileProviderImpl extends AbstractFileProvider implements FileProvider {
 
-    public LocalFileProviderImpl(FiletProperties.Target config, FileRepository fileRepository) {
-        super(config, fileRepository);
+    public LocalFileProviderImpl(FiletProperties.Target target, FileRepository fileRepository) {
+        super(target, fileRepository);
     }
 
     @Override
     public FileResult upload(MultipartFile file, FileEntity fileEntity, FileResult fileResult) throws Exception {
-        File f = FileUtils.getFile(config.getRoot(), fileResult.getPath());
+        File f = FileUtils.getFile(target.getRoot(), fileResult.getPath());
         FileUtils.forceMkdir(f.getParentFile());
         FileUtils.copyInputStreamToFile(file.getInputStream(), f);
         return fileResult;

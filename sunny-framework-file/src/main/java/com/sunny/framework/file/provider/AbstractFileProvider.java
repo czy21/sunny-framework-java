@@ -19,13 +19,16 @@ import java.util.UUID;
 @Slf4j
 public abstract class AbstractFileProvider implements FileProvider {
 
-    protected FiletProperties.Target config;
+    protected FiletProperties.Target target;
     protected FileRepository fileRepository;
 
-    public AbstractFileProvider(FiletProperties.Target config,
-                                FileRepository fileRepository) {
-        this.config = config;
+    public AbstractFileProvider(FiletProperties.Target target, FileRepository fileRepository) {
+        this.target = target;
         this.fileRepository = fileRepository;
+    }
+
+    public FiletProperties.Target getTarget() {
+        return target;
     }
 
     public FileResult upload(MultipartFile file) {
@@ -60,7 +63,7 @@ public abstract class AbstractFileProvider implements FileProvider {
                 .name(file.getOriginalFilename())
                 .type(file.getContentType())
                 .path(path)
-                .targetKey(config.getKey())
+                .targetKey(target.getKey())
                 .build();
     }
 
@@ -70,11 +73,11 @@ public abstract class AbstractFileProvider implements FileProvider {
                 .id(fileEntity.getId())
                 .name(fileEntity.getName())
                 .type(fileEntity.getType())
-                .path(FilenameUtils.separatorsToUnix(Paths.get(config.getPath(), fileEntity.getPath()).toString()))
+                .path(FilenameUtils.separatorsToUnix(Paths.get(target.getPath(), fileEntity.getPath()).toString()))
                 .build();
         try {
-            if (config.getKind() != FileTargetKind.LOCAL) {
-                fileResult.setFullPath(new URI(config.getRoot()).resolve(fileResult.getPath()).toString());
+            if (target.getKind() != FileTargetKind.LOCAL) {
+                fileResult.setFullPath(new URI(target.getRoot()).resolve(fileResult.getPath()).toString());
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

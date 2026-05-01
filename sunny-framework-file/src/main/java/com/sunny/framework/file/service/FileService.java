@@ -20,12 +20,12 @@ public class FileService {
 
     public FileResult queryById(String id) {
         FileEntity fileEntity = fileRepository.selectByPrimaryKey(id);
-        return fileProviderFactory.getProvider(fileEntity.getTargetKey()).generateFileResult(fileEntity);
+        return fileProviderFactory.getProviders().get(fileEntity.getTargetKey()).generateFileResult(fileEntity);
     }
 
     public List<FileResult> queryByIds(List<String> ids) {
         List<FileEntity> fileEntities = fileRepository.selectListByIds(ids);
-        return fileEntities.stream().map(t -> fileProviderFactory.getProvider(t.getTargetKey()).generateFileResult(t)).toList();
+        return fileEntities.stream().map(t -> fileProviderFactory.getProviders().get(t.getTargetKey()).generateFileResult(t)).toList();
     }
 
 }
