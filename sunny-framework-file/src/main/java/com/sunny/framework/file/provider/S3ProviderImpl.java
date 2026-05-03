@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.BufferedInputStream;
 import java.net.URI;
 
 @Slf4j
@@ -22,21 +23,20 @@ public class S3ProviderImpl extends AbstractFileProvider implements FileProvider
 
     S3Client s3Client;
 
-    public S3ProviderImpl(FiletProperties.Target config, FileRepository fileRepository) {
-        super(config, fileRepository);
+    public S3ProviderImpl(FiletProperties.Target target, FileRepository fileRepository) {
+        super(target, fileRepository);
         S3ClientBuilder s3ClientBuilder = S3Client.builder()
-                .endpointOverride(URI.create(config.getRoot()))
-                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(config.getAccessKey(), config.getAccessKeySecret())));
-        if (StringUtils.hasText(config.getRegion())) {
-            s3ClientBuilder = s3ClientBuilder.region(Region.of(config.getRegion()));
-        }
+                .endpointOverride(URI.create(target.getRoot()))
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(target.getAccessKey(), target.getAccessKeySecret())));
+        s3ClientBuilder = s3ClientBuilder.region(Region.of(target.getRegion()));
+        s3ClientBuilder = s3ClientBuilder.forcePathStyle(true);
         s3Client = s3ClientBuilder.build();
     }
 
     @Override
     public FileResult upload(MultipartFile file, FileEntity fileEntity, FileResult fileResult) throws Exception {
         PutObjectRequest.Builder pbr = PutObjectRequest.builder().bucket(target.getPath()).key(fileEntity.getPath());
-        s3Client.putObject(pbr.build(), RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+        s3Client.putObject(pbr.build(), RequestBody.fromBytes(file.getBytes()));
         return fileResult;
     }
 }

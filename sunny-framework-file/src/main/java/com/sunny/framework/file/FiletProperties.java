@@ -24,7 +24,7 @@ public class FiletProperties {
         private String root;
         private String path;
         private FileTargetKind kind;
-        private String region;
+        private String region = "us-east-1";
         private String accessKey;
         private String accessKeySecret;
         @Name("default")
