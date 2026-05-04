@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class FileResult {
-    String id;
-    String name;
-    String type;
-    String path;
-    String fullPath;
+    private String id;
+    private String name;
+    private String type;
+    private String path;
+    private Long size;
+    private String fullPath;
 }
