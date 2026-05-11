@@ -27,6 +27,7 @@ dependencies {
         api project(":sunny-framework-file")
         api project(":sunny-framework-job")
         api project(":sunny-framework-log")
+        api project(":sunny-framework-pay")
         api project(":sunny-framework-web")
         api project(":sunny-framework-webflux")
         api project(":sunny-framework-statemachine-kryo")

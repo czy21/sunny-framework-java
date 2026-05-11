@@ -19,6 +19,10 @@ include('sunny-framework-doc')
 include("sunny-framework-file")
 include("sunny-framework-job")
 include("sunny-framework-log")
+include("sunny-framework-pay")
 include("sunny-framework-web")
 include("sunny-framework-webflux")
 include("sunny-framework-statemachine-kryo")
+
+
+//include("sunny-framework-test")

@@ -14,7 +14,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = FiletProperties.PREFIX)
 public class FiletProperties {
 
-    public static final String PREFIX = "file";
+    public static final String PREFIX = "sunny.file";
 
     private Map<String, Target> target = new LinkedHashMap<>();
 
