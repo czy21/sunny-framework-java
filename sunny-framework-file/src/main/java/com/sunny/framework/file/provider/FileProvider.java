@@ -23,4 +23,6 @@ public interface FileProvider {
     default String get(String path, Duration expire) {
         return null;
     }
+
+    default void appendText(String path, String text) {};
 }

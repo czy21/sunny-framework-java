@@ -8,19 +8,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import software.amazon.awssdk.services.s3.S3Configuration;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 
@@ -81,5 +83,29 @@ public class S3ProviderImpl extends AbstractFileProvider implements FileProvider
             PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(builder -> builder.signatureDuration(expire).getObjectRequest(getObjectRequest));
             return presignedRequest.url().toString();
         }
+    }
+
+    @Override
+    public void appendText(String path, String text) {
+        String bucket = target.getPath();
+        StringBuilder sb = new StringBuilder();
+        try {
+            ResponseInputStream<GetObjectResponse> obj = s3Client.getObject(GetObjectRequest.builder().bucket(bucket).key(path).build());
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(obj, StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line).append("\n");
+                }
+            }
+        } catch (NoSuchKeyException ignored) {
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        sb.append(text);
+
+        byte[] result = sb.toString().getBytes(StandardCharsets.UTF_8);
+
+        s3Client.putObject(PutObjectRequest.builder().bucket(bucket).key(path).contentType("text/plain; charset=utf-8").build(), RequestBody.fromBytes(result));
     }
 }
