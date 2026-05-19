@@ -45,8 +45,6 @@ public class FileProviderFactory implements InitializingBean {
                     switch (n.getValue().getKind()) {
                         case LOCAL -> m.put(n.getKey(), new LocalFileProviderImpl(n.getValue(), fileRepository));
                         case S3 -> m.put(n.getKey(), new S3ProviderImpl(n.getValue(), fileRepository));
-                        case OSS_MINIO -> m.put(n.getKey(), new OSSMinioFileProviderImpl(n.getValue(), fileRepository));
-                        case OSS_ALI -> m.put(n.getKey(), new OSSAliFileProviderImpl(n.getValue(), fileRepository));
                     }
                 }, Map::putAll));
         logger.info("file providers: {}", String.join(" ", providers.keySet()));

@@ -1,3 +1,10 @@
+tasks.named('npmInstall', NpmTask) {
+    environment = [
+            'npm_config_registry'   : System.getenv('param_npm_repo') ?: 'https://registry.npmmirror.com/',
+            'npm_config_node_linker': 'hoisted'
+    ]
+}
+
 tasks.named('pnpmInstall', PnpmTask) {
     environment = [
             'npm_config_registry'   : System.getenv('param_npm_repo') ?: 'https://registry.npmmirror.com/',
@@ -12,6 +19,6 @@ tasks.register('clean', Delete) {
 
 tasks.register('build', NpmTask) {
     group 'build'
-    dependsOn tasks.pnpmInstall
+    dependsOn { project.file('pnpm-lock.yaml').exists() ? 'pnpmInstall' : 'npmInstall' }
     args = ['run', 'build']
 }
