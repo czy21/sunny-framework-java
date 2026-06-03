@@ -2,8 +2,9 @@ package com.sunny.framework.pay.paypal;
 
 import com.paypal.sdk.PaypalServerSdkClient;
 import com.paypal.sdk.authentication.ClientCredentialsAuthModel;
+import com.sunny.framework.pay.provider.PayProvider;
 
-public class PayPalProvider {
+public class PayPalProvider implements PayProvider {
 
     PayPalProperties properties;
 
@@ -15,8 +16,8 @@ public class PayPalProvider {
         paypalServerSdkClient = new PaypalServerSdkClient.Builder()
                 .loggingConfig(builder -> builder
                         .level(properties.getLogLevel())
-                        .requestConfig(logConfigBuilder -> logConfigBuilder.body(true))
-                        .responseConfig(logConfigBuilder -> logConfigBuilder.headers(true)))
+                        .requestConfig(logConfigBuilder -> logConfigBuilder.headers(true).body(true))
+                        .responseConfig(logConfigBuilder -> logConfigBuilder.headers(true).body(true)))
                 .httpClientConfig(configBuilder -> configBuilder.timeout(0))
                 .clientCredentialsAuth(clientCredentialsAuthModel)
                 .environment(properties.getEnvironment())

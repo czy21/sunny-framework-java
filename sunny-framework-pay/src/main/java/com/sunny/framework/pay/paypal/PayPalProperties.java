@@ -14,6 +14,8 @@ public class PayPalProperties {
 
     private String clientId;
     private String clientKey;
-    private Environment environment=Environment.SANDBOX;
+    private Environment environment = Environment.SANDBOX;
     private Level logLevel = Level.DEBUG;
+    private String returnUrl;
+    private String cancelUrl;
 }
