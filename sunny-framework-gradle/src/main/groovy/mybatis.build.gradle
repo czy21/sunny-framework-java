@@ -1,0 +1,23 @@
+configurations {
+    mybatisGenerator
+}
+
+dependencies {
+    mybatisGenerator 'org.mybatis.generator:mybatis-generator-core'
+    mybatisGenerator 'com.sunny:sunny-generator-mybatis:1.0-SNAPSHOT'
+
+    mybatisGenerator 'com.github.javaparser:javaparser-core'
+    mybatisGenerator "com.mysql:mysql-connector-j"
+    mybatisGenerator "org.postgresql:postgresql"
+    mybatisGenerator "com.microsoft.sqlserver:mssql-jdbc"
+}
+
+tasks.register('mybatisGenerate', JavaExec) {
+    group = 'mybatis'
+    description = 'Generate MyBatis sources'
+
+    classpath = configurations.mybatisGenerator + files(projectDir)
+    mainClass = 'org.mybatis.generator.api.ShellRunner'
+
+    args('-configfile', "${projectDir}/generator.xml", '-verbose')
+}
