@@ -1,16 +1,17 @@
 package com.sunny.generator.mybatis.internal.types;
 
-import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
+import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl;
 
 import java.sql.Types;
 
 public class JavaTypeResolverImpl extends JavaTypeResolverDefaultImpl {
 
-    public JavaTypeResolverImpl() {
-        super();
-        typeMap.put(Types.LONGVARCHAR, new JdbcTypeInformation("VARCHAR", new FullyQualifiedJavaType(String.class.getName())));
-        typeMap.put(Types.TINYINT, new JdbcTypeInformation("INTEGER", new FullyQualifiedJavaType(Integer.class.getName())));
-        typeMap.put(Types.SMALLINT, new JdbcTypeInformation("INTEGER", new FullyQualifiedJavaType(Integer.class.getName())));
+    @Override
+    protected JdbcTypeInformation overrideDefault(IntrospectedColumn column, JdbcTypeInformation defaultTypeInformation) {
+        return switch (column.getJdbcType()) {
+            case Types.TINYINT, Types.SMALLINT -> typeMap.get(Types.INTEGER);
+            default -> super.overrideDefault(column, defaultTypeInformation);
+        };
     }
 }
