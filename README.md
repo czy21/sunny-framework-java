@@ -1,6 +1,7 @@
 ## Publish to maven
 ```shell
-./gradlew publishAllPublicationsToHomeSnapshotsRepository
+./gradlew clean
+./gradlew publishToMavenLocal
 ```
 ## Graaljs
 - OpenJDK11

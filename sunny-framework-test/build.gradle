@@ -2,9 +2,9 @@ plugins {
     id 'org.springframework.boot' apply false
 
     id 'java-library'
-    id 'common.build'
-    id 'lombok.build'
-    id 'spring.build'
+    id 'com.sunny.framework.common'
+    id 'com.sunny.framework.lombok'
+    id 'com.sunny.framework.springbuild'
 }
 
 group = 'com.sunny'
