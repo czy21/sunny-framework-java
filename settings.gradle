@@ -1,15 +1,11 @@
 pluginManagement {
-    includeBuild("./sunny-framework-gradle")
-    def props = new Properties()
-    file("./version.properties").withInputStream {
-        props.load(it)
-    }
     plugins {
-        id 'org.springframework.boot' version props["springBootVersion"]
+        id 'org.springframework.boot' version springBootVersion
     }
 }
 
-// spring
+includeBuild("sunny-framework-gradle")
+
 include("sunny-framework-bom")
 include("sunny-framework-bundle")
 include("sunny-framework-cache")
@@ -19,9 +15,11 @@ include('sunny-framework-doc')
 include("sunny-framework-file")
 include("sunny-framework-job")
 include("sunny-framework-log")
+include("sunny-framework-pay")
 include("sunny-framework-web")
 include("sunny-framework-webflux")
 include("sunny-framework-statemachine-kryo")
 
+include("sunny-generator-mybatis")
 
 //include("sunny-framework-test")

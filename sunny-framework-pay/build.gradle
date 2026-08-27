@@ -1,0 +1,7 @@
+plugins {
+    id "com.sunny.framework.lombok"
+}
+
+dependencies {
+    api 'com.paypal.sdk:paypal-server-sdk'
+}

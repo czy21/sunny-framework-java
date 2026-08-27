@@ -1,5 +1,5 @@
 plugins {
-    id "lombok.build"
+    id "com.sunny.framework.lombok"
 }
 dependencies {
     api "com.xuxueli:xxl-job-core"

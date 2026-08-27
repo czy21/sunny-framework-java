@@ -1,0 +1,31 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'com.sunny.framework.publish'
+    id 'com.sunny.framework.mybatis'
+}
+
+dependencies {
+    api 'org.mybatis.generator:mybatis-generator-core'
+    api 'com.github.javaparser:javaparser-core'
+}
+
+sourceSets {
+    main {
+        java {
+            exclude 'generator/**'
+        }
+        resources {
+            exclude 'generator/**'
+        }
+    }
+}
+
+tasks.named('clean') {
+    delete "$projectDir/src/main/java/generator"
+    delete "$projectDir/src/main/resources/generator"
+}
+
+tasks.named('jar') {
+    from("$projectDir/generator.xml")
+}

@@ -66,4 +66,6 @@ __pycache__/
 # cicd
 .jenkins
 
-sunny-generator-mybatis/src/main/resources/generator.properties
+sunny-generator-mybatis/generator.properties
+sunny-generator-mybatis/src/main/java/generator/
+sunny-generator-mybatis/src/main/resources/generator/

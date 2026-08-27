@@ -25,6 +25,9 @@ dependencyManagement {
         dependency 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
         dependency 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.13'
         dependency "io.swagger.core.v3:swagger-annotations-jakarta:2.2.37"
+
+        dependency 'org.mybatis.generator:mybatis-generator-core:2.0.0'
+        dependency 'com.github.javaparser:javaparser-core:3.28.2'
         dependency "com.baomidou:mybatis-plus-spring-boot3-starter:3.5.14"
         dependency "com.github.pagehelper:pagehelper:6.1.1"
 
@@ -47,6 +50,8 @@ dependencyManagement {
 
         dependency "com.alibaba:easyexcel:4.0.1"
         dependency "org.apache.pulsar:pulsar-client:3.3.0"
+
+        dependency 'com.paypal.sdk:paypal-server-sdk:2.0.0'
 
         dependency "net.logstash.logback:logstash-logback-encoder:9.0"
 

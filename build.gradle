@@ -1,18 +1,34 @@
 plugins {
     id 'org.springframework.boot' apply false
-    id 'common.build' apply false
+    id 'com.sunny.framework.common' apply false
+    id 'maven-publish'
 }
 
-def specialModules  = [
+group = 'com.sunny'
+version = sunnyFrameworkVersion
+
+def specialModules = [
         "sunny-framework-bom",
-        "sunny-framework-test"
+        "sunny-framework-test",
+        "sunny-generator-mybatis"
 ]
+
+tasks.register("clean") {
+    group = "build"
+    dependsOn gradle.includedBuilds*.task(":clean")
+}
+
+tasks.matching { it.name.startsWith('publish') }.each {
+    tasks.named("${it.name}") {
+        dependsOn gradle.includedBuilds*.task(":${it.name}")
+    }
+}
 
 subprojects {
     apply plugin: 'io.spring.dependency-management'
 
-    group = 'com.sunny'
-    version = '3.0.0-SNAPSHOT'
+    group = rootProject.group
+    version = sunnyFrameworkVersion
 
     dependencyManagement {
         generatedPomCustomization {
@@ -27,10 +43,9 @@ subprojects {
 
     if (!specialModules.contains(name)) {
         apply plugin: 'java-library'
-        apply plugin: 'common.build'
-        apply plugin: "spring.build"
+        apply plugin: 'com.sunny.framework.common'
+        apply plugin: 'com.sunny.framework.spring'
 
-        apply plugin: 'maven-publish'
-        apply plugin: "publish.build"
+        apply plugin: 'com.sunny.framework.publish'
     }
 }
