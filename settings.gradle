@@ -24,5 +24,6 @@ include("sunny-framework-web")
 include("sunny-framework-webflux")
 include("sunny-framework-statemachine-kryo")
 
+include("sunny-generator-mybatis")
 
 //include("sunny-framework-test")

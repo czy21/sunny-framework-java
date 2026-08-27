@@ -5,7 +5,8 @@ plugins {
 
 def specialModules  = [
         "sunny-framework-bom",
-        "sunny-framework-test"
+        "sunny-framework-test",
+        "sunny-generator-mybatis"
 ]
 
 subprojects {

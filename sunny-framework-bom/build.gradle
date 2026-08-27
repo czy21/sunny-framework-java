@@ -31,5 +31,6 @@ dependencies {
         api project(":sunny-framework-web")
         api project(":sunny-framework-webflux")
         api project(":sunny-framework-statemachine-kryo")
+        api project(":sunny-generator-mybatis")
     }
 }
