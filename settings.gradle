@@ -4,7 +4,7 @@ pluginManagement {
     }
 }
 
-includeBuild("sunny-framework-gradle")
+includeBuild("com.sunny.framework.gradle")
 
 include("sunny-framework-bom")
 include("sunny-framework-bundle")
@@ -22,4 +22,4 @@ include("sunny-framework-statemachine-kryo")
 
 include("sunny-generator-mybatis")
 
-//include("sunny-framework-test")
+//include("framework-test")

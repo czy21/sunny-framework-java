@@ -1,0 +1,17 @@
+name: Build
+
+on:
+  push:
+    branches: 
+      - main
+      - boot-*
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v6
+      - run: |
+          chmod +x ./gradlew
+          ./gradlew clean
+          ./gradlew publishToMavenLocal publishAllPublicationsToHomeSnapshotsRepository
