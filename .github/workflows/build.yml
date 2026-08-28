@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: |
+          [ -f "$HOME/.bashrc" ] && source $HOME/.bashrc
           chmod +x ./gradlew
           ./gradlew clean
           ./gradlew publishToMavenLocal publishAllPublicationsToHomeSnapshotsRepository

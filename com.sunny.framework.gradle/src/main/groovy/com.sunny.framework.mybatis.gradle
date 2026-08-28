@@ -3,7 +3,7 @@ configurations {
 }
 
 dependencies {
-    mybatisGenerator 'com.sunny.framework:sunny-generator-mybatis'
+    mybatisGenerator 'com.sunny:sunny-generator-mybatis'
 
     mybatisGenerator "com.mysql:mysql-connector-j"
     mybatisGenerator "org.postgresql:postgresql"

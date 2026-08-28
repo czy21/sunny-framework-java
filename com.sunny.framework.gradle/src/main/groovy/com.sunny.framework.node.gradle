@@ -5,7 +5,7 @@ tasks.named('npmInstall', NpmTask) {
 
 tasks.named('pnpmInstall', PnpmTask) {
     environment = [
-            'pnpm_config_registry'   : providers.gradleProperty('param_npm_repo').get() ?: System.getenv('param_npm_repo')
+            'pnpm_config_registry': providers.gradleProperty('param_npm_repo').getOrElse(System.getenv('param_npm_repo'))
     ]
 }
 
