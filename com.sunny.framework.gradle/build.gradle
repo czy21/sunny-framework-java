@@ -8,5 +8,5 @@ file("../gradle.properties").withInputStream {
     props.load(it)
 }
 
-group = 'com.sunny.sunny-framework-gradle'
+group = 'com.sunny.framework.gradle'
 version = props['sunnyFrameworkVersion']

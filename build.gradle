@@ -1,6 +1,6 @@
 plugins {
-    id 'org.springframework.boot' apply false
     id 'com.sunny.framework.common' apply false
+    id 'org.springframework.boot' apply false
     id 'maven-publish'
 }
 
