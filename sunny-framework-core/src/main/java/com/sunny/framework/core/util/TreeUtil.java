@@ -77,13 +77,17 @@ public class TreeUtil {
 
         T root = supplier.get();
 
-        buildChildren(all, root, decoNodeFunc, sortComparator, 0);
+        buildChildren(all, root, decoNodeFunc, sortComparator, 0, Optional.ofNullable(root.getPathKeys()).orElse(new ArrayList<>()));
 
         return (List<T>) Optional.ofNullable(root.getChildren()).orElse(new ArrayList<>());
     }
 
     @SuppressWarnings("unchecked")
-    public static <V, T extends TreeNode<V>> void buildChildren(List<T> all, T node, Consumer<T> decoNodeFunc, Comparator<T> sortComparator, int level) {
+    public static <V, T extends TreeNode<V>> void buildChildren(List<T> all, T node, Consumer<T> decoNodeFunc, Comparator<T> sortComparator, int level, List<V> path) {
+
+        List<V> currentPath = new ArrayList<>(path);
+        currentPath.add(node.getKey());
+        node.setParentKeys(currentPath);
 
         if (decoNodeFunc != null) {
             decoNodeFunc.accept(node);
@@ -93,7 +97,7 @@ public class TreeUtil {
 
         for (T t : all) {
             if (Objects.equals(node.getKey(), t.getParentKey())) {
-                buildChildren(all, t, decoNodeFunc, sortComparator, level + 1);
+                buildChildren(all, t, decoNodeFunc, sortComparator, level + 1, currentPath);
                 node.setChildren(Optional.ofNullable(node.getChildren()).orElse(new ArrayList<>()));
                 ((List<T>) node.getChildren()).add(t);
                 if (sortComparator != null) {
@@ -147,7 +151,7 @@ public class TreeUtil {
     }
 
     @SuppressWarnings("unchecked")
-    public static <VS,VT, S extends TreeNode<VS>, T extends TreeNode<VT>> List<T> mapTo(List<S> sources, Function<S, T> stFunction) {
+    public static <VS, VT, S extends TreeNode<VS>, T extends TreeNode<VT>> List<T> mapTo(List<S> sources, Function<S, T> stFunction) {
         return sources.stream()
                 .map(s -> {
                     T target = stFunction.apply(s);
