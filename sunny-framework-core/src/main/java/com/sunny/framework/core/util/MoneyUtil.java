@@ -46,13 +46,4 @@ public class MoneyUtil {
         }
         return fen2Yuan(val).stripTrailingZeros().toPlainString();
     }
-
-    public static void main(String[] args) {
-        String y1 = "10043.567";
-        Integer f1 = yuan2Fen(y1);
-
-        Integer f2 = 200001;
-        String y2 = fen2YuanString(f2);
-        System.out.println("a");
-    }
 }
