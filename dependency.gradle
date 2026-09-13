@@ -11,9 +11,9 @@ dependencyManagement {
 
     dependencies {
 
-        dependency "org.graalvm.truffle:truffle-runtime:23.1.5"
-        dependency "org.graalvm.js:js-language:23.1.5"
-        dependency "org.graalvm.python:python-language:23.1.5"
+        dependency "org.graalvm.polyglot:polyglot:25.0.2"
+        dependency "org.graalvm.polyglot:js:25.0.2"
+        dependency "org.graalvm.polyglot:python:25.0.2"
 
         dependency "commons-io:commons-io:2.16.1"
         dependency "org.apache.commons:commons-collections4:4.4"
