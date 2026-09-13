@@ -22,4 +22,4 @@ include("sunny-framework-statemachine-kryo")
 
 include("sunny-generator-mybatis")
 
-//include("framework-test")
+include("sunny-framework-test")
