@@ -8,7 +8,7 @@ dependencies {
     api 'tools.jackson.core:jackson-databind'
     api 'com.github.pagehelper:pagehelper'
 
-    api "org.graalvm.truffle:truffle-runtime"
-    api "org.graalvm.js:js-language"
-    api "org.graalvm.python:python-language"
+    api "org.graalvm.polyglot:polyglot"
+    api "org.graalvm.polyglot:js"
+    api "org.graalvm.polyglot:python"
 }
