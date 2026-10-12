@@ -7,18 +7,26 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Created by xuxueli on 16/9/30.
+ */
 public class XxlJobGroup {
 
     private int id;
     private String appname;
-    private String title;
+    private String name;
+
     private int addressType;        // 执行器地址类型：0=自动注册、1=手动录入
     private String addressList;     // 执行器地址列表，多地址逗号分隔(手动录入)
+
+    private String accessToken;
     private Date updateTime;
 
     // registry list
     private List<String> registryList;  // 执行器地址列表(系统注册)
+
     public List<String> getRegistryList() {
+
         if (StringUtils.hasText(addressList)) {
             registryList = new ArrayList<>(Arrays.asList(addressList.split(",")));
         }
@@ -41,12 +49,12 @@ public class XxlJobGroup {
         this.appname = appname;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getAddressType() {
@@ -61,6 +69,18 @@ public class XxlJobGroup {
         return addressList;
     }
 
+    public void setAddressList(String addressList) {
+        this.addressList = addressList;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
     public Date getUpdateTime() {
         return updateTime;
     }
@@ -69,8 +89,16 @@ public class XxlJobGroup {
         this.updateTime = updateTime;
     }
 
-    public void setAddressList(String addressList) {
-        this.addressList = addressList;
+    @Override
+    public String toString() {
+        return "XxlJobGroup{" +
+                "id=" + id +
+                ", appname='" + appname + '\'' +
+                ", name='" + name + '\'' +
+                ", addressType=" + addressType +
+                ", addressList='" + addressList + '\'' +
+                ", accessToken='" + accessToken + '\'' +
+                ", updateTime=" + updateTime +
+                '}';
     }
-
 }

@@ -2,6 +2,7 @@ plugins {
     id "com.sunny.framework.lombok"
 }
 dependencies {
+    api 'tools.jackson.core:jackson-databind'
     api "com.xuxueli:xxl-job-core"
     api "org.springframework:spring-web"
     api "org.springframework.cloud:spring-cloud-openfeign-core"
