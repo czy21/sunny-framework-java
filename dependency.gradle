@@ -41,7 +41,7 @@ dependencyManagement {
         dependency "software.amazon.awssdk:s3:2.43.1"
         dependency "io.minio:minio:8.6.0"
         dependency "com.aliyun.oss:aliyun-sdk-oss:3.18.5"
-        dependency "com.xuxueli:xxl-job-core:3.2.0"
+        dependency "com.xuxueli:xxl-job-core:3.5.1-SNAPSHOT"
         dependency "org.mapstruct:mapstruct:1.6.3"
         dependency "org.mapstruct:mapstruct-processor:1.6.3"
         dependency "org.projectlombok:lombok-mapstruct-binding:0.2.0"
