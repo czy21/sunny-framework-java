@@ -1,6 +1,8 @@
 package com.sunny.framework.web;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.jackson.autoconfigure.JacksonProperties;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
@@ -18,13 +20,12 @@ import java.time.format.DateTimeFormatter;
 
 public class JacksonConfigure {
 
-    public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss";
-
     @Bean
     @Order(10)
-    public JsonMapperBuilderCustomizer jsonMapperBuilderCustomizer() {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
+    public JsonMapperBuilderCustomizer jsonMapperBuilderCustomizer(JacksonProperties jacksonProperties) {
         SimpleModule module = new SimpleModule();
+
+        DateTimeFormatter dateTimeFormatter = jacksonProperties.getDateFormat() != null ? DateTimeFormatter.ofPattern(jacksonProperties.getDateFormat()) : null;
         module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
         module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
         module.addDeserializer(String.class, new ValueDeserializer<>() {
@@ -34,7 +35,7 @@ public class JacksonConfigure {
             }
         });
         return (builder) -> {
-            builder.defaultDateFormat(new SimpleDateFormat(DATE_FORMAT_PATTERN));
+            builder.defaultDateFormat(jacksonProperties.getDateFormat() != null ? new SimpleDateFormat(jacksonProperties.getDateFormat()) : null);
             builder.addModule(module);
         };
     }

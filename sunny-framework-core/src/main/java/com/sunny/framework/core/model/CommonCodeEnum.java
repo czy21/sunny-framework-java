@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum CommonCodeEnum {
     SUCCESS(0, "success"),
-    EXCEPTION(-1, "inner error");
+    EXCEPTION(-1, "Server error");
     private final Integer code;
     private final String message;
 

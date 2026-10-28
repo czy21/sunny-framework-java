@@ -11,6 +11,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.LegacyMd5Plugin;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import software.amazon.awssdk.services.s3.S3Configuration;
@@ -38,6 +39,7 @@ public class S3ProviderImpl extends AbstractFileProvider implements FileProvider
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(target.getAccessKey(), target.getAccessKeySecret())));
         s3ClientBuilder = s3ClientBuilder.region(Region.of(target.getRegion()));
         s3ClientBuilder = s3ClientBuilder.forcePathStyle(true);
+        s3ClientBuilder = s3ClientBuilder.addPlugin(LegacyMd5Plugin.create());
         s3Client = s3ClientBuilder.build();
     }
 
@@ -82,6 +84,27 @@ public class S3ProviderImpl extends AbstractFileProvider implements FileProvider
                     .build();
             PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(builder -> builder.signatureDuration(expire).getObjectRequest(getObjectRequest));
             return presignedRequest.url().toString();
+        }
+    }
+
+    @Override
+    public void del(String path) {
+        ListObjectsV2Request req = ListObjectsV2Request.builder()
+                .bucket(target.getPath())
+                .prefix(path)
+                .build();
+
+        for (var page : s3Client.listObjectsV2Paginator(req)) {
+            var objects = page.contents().stream()
+                    .map(object -> ObjectIdentifier.builder().key(object.key()).build())
+                    .toList();
+
+            if (!objects.isEmpty()) {
+                s3Client.deleteObjects(DeleteObjectsRequest.builder()
+                        .bucket(target.getPath())
+                        .delete(Delete.builder().objects(objects).build())
+                        .build());
+            }
         }
     }
 
