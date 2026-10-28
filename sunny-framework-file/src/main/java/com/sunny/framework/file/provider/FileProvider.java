@@ -24,5 +24,11 @@ public interface FileProvider {
         return null;
     }
 
-    default void appendText(String path, String text) {};
+    default void del(String path) {
+    }
+
+    default void appendText(String path, String text) {
+    }
+
+    ;
 }

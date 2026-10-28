@@ -4,13 +4,13 @@ import com.sunny.framework.file.FiletProperties;
 import com.sunny.framework.file.model.FileEntity;
 import com.sunny.framework.file.model.FileResult;
 import com.sunny.framework.file.repository.FileRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.LegacyMd5Plugin;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import software.amazon.awssdk.services.s3.S3Configuration;
@@ -26,7 +26,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 
-@Slf4j
 public class S3ProviderImpl extends AbstractFileProvider implements FileProvider {
 
     S3Client s3Client;
@@ -38,6 +37,7 @@ public class S3ProviderImpl extends AbstractFileProvider implements FileProvider
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(target.getAccessKey(), target.getAccessKeySecret())));
         s3ClientBuilder = s3ClientBuilder.region(Region.of(target.getRegion()));
         s3ClientBuilder = s3ClientBuilder.forcePathStyle(true);
+        s3ClientBuilder = s3ClientBuilder.addPlugin(LegacyMd5Plugin.create());
         s3Client = s3ClientBuilder.build();
     }
 
@@ -82,6 +82,27 @@ public class S3ProviderImpl extends AbstractFileProvider implements FileProvider
                     .build();
             PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(builder -> builder.signatureDuration(expire).getObjectRequest(getObjectRequest));
             return presignedRequest.url().toString();
+        }
+    }
+
+    @Override
+    public void del(String path) {
+        ListObjectsV2Request req = ListObjectsV2Request.builder()
+                .bucket(target.getPath())
+                .prefix(path)
+                .build();
+
+        for (var page : s3Client.listObjectsV2Paginator(req)) {
+            var objects = page.contents().stream()
+                    .map(object -> ObjectIdentifier.builder().key(object.key()).build())
+                    .toList();
+
+            if (!objects.isEmpty()) {
+                s3Client.deleteObjects(DeleteObjectsRequest.builder()
+                        .bucket(target.getPath())
+                        .delete(Delete.builder().objects(objects).build())
+                        .build());
+            }
         }
     }
 

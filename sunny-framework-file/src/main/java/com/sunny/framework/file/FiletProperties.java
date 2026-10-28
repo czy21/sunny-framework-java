@@ -16,6 +16,9 @@ public class FiletProperties {
 
     public static final String PREFIX = "sunny.file";
 
+    private String accessKey;
+    private String accessKeySecret;
+
     private Map<String, Target> target = new LinkedHashMap<>();
 
     @Data
