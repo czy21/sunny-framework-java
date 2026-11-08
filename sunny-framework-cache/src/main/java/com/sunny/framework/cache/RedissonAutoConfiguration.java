@@ -17,7 +17,6 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.data.redis.core.RedisOperations;
@@ -30,7 +29,7 @@ import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.List;
 
-@Configuration(proxyBeanMethods = false)
+
 @ConditionalOnClass({Redisson.class, RedisOperations.class})
 @EnableConfigurationProperties({RedissonProperties.class, DataRedisProperties.class})
 public class RedissonAutoConfiguration {

@@ -9,14 +9,19 @@ import com.redis.om.spring.RedisOMProperties;
 import com.redis.om.spring.annotations.Bloom;
 import com.redis.om.spring.annotations.Cuckoo;
 import com.redis.om.spring.annotations.Document;
+import com.redis.om.spring.annotations.IndexingOptions;
 import com.redis.om.spring.client.RedisModulesClient;
 import com.redis.om.spring.indexing.RediSearchIndexer;
 import com.redis.om.spring.mapping.RedisEnhancedMappingContext;
+import com.redis.om.spring.ops.CommandListener;
+import com.redis.om.spring.ops.NoOpCommandListener;
 import com.redis.om.spring.ops.RedisModulesOperations;
 import com.redis.om.spring.ops.json.JSONOperations;
 import com.redis.om.spring.ops.pds.BloomOperations;
 import com.redis.om.spring.ops.pds.CountMinSketchOperations;
 import com.redis.om.spring.ops.pds.CuckooFilterOperations;
+import com.redis.om.spring.repository.RedisDocumentRepository;
+import com.redis.om.spring.repository.RedisEnhancedRepository;
 import com.redis.om.spring.search.stream.EntityStream;
 import com.redis.om.spring.search.stream.EntityStreamImpl;
 import com.redis.om.spring.serialization.gson.*;
@@ -39,20 +44,21 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.mapping.RedisMappingContext;
 import org.springframework.lang.Nullable;
 import redis.clients.jedis.bloom.CFReserveParams;
 
 import java.time.*;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import static com.redis.om.spring.util.ObjectUtils.getBeanDefinitionsFor;
-import static com.redis.om.spring.util.ObjectUtils.getDeclaredFieldsTransitively;
+import static com.redis.om.spring.util.ObjectUtils.*;
 
-@Configuration(proxyBeanMethods = false)
+
+@Configuration(
+        proxyBeanMethods = false
+)
 @EnableConfigurationProperties(
         {RedisOMProperties.class}
 )
@@ -192,9 +198,10 @@ public class RedisOMAutoConfiguration {
      * including JSON, Search, Bloom filters, and other probabilistic data structures.
      * It serves as the central operations hub for Redis OM Spring functionality.
      *
-     * @param rmc           the Redis modules client for low-level access
-     * @param redisTemplate the string Redis template for basic operations
-     * @param gsonBuilder   the Gson builder for JSON serialization
+     * @param rmc             the Redis modules client for low-level access
+     * @param template        the string Redis template for basic operations
+     * @param gsonBuilder     the Gson builder for JSON serialization
+     * @param commandListener a command listener for monitoring Redis commands
      * @return the Redis modules operations instance
      */
     @Bean(
@@ -205,11 +212,27 @@ public class RedisOMAutoConfiguration {
     @Lazy
     RedisModulesOperations<?> redisModulesOperations( //
                                                       RedisModulesClient rmc, //
-                                                      StringRedisTemplate redisTemplate, //
+                                                      StringRedisTemplate template, //
                                                       @Qualifier(
                                                               "omGsonBuilder"
-                                                      ) GsonBuilder gsonBuilder) {
-        return new RedisModulesOperations<>(rmc, redisTemplate, gsonBuilder);
+                                                      ) GsonBuilder gsonBuilder, final CommandListener commandListener) {
+        return new RedisModulesOperations<>(rmc, template, gsonBuilder, commandListener);
+    }
+
+    /**
+     * Provides a default no-operation implementation of the CommandListener bean.
+     * <p>
+     * Only created when no other {@link CommandListener} bean is present in the application context,
+     * allowing applications to supply a custom implementation simply by declaring their own bean.
+     *
+     * @return a NoOpCommandListener instance, which performs no operations.
+     */
+    @Bean
+    @ConditionalOnMissingBean(
+            CommandListener.class
+    )
+    public CommandListener commandListener() {
+        return new NoOpCommandListener();
     }
 
     /**
@@ -283,22 +306,40 @@ public class RedisOMAutoConfiguration {
      * indexes for entities annotated with {@code @Document} and {@code @RedisHash}.
      * It scans entity classes for indexable fields and creates the appropriate
      * search indexes in Redis.
+     * <p>
+     * Applications can provide their own {@link RediSearchIndexer} bean named
+     * {@code rediSearchIndexer} to customize index-name resolution or index
+     * management behavior. The bean name is significant because Redis OM Spring
+     * also looks up the indexer by that name during index creation.
      *
-     * @param ac          the application context for bean discovery
-     * @param properties  the Redis OM configuration properties
-     * @param gsonBuilder the Gson builder for JSON serialization
+     * @param ac                     the application context for SpEL expression evaluation
+     * @param properties             the Redis OM configuration properties
+     * @param gsonBuilder            the Gson builder for JSON serialization
+     * @param redisModulesOperations the Redis modules operations for search index management
+     * @param mappingContext         the Redis mapping context for entity metadata
      * @return the configured RediSearch indexer instance
      */
+    @SuppressWarnings(
+            "unchecked"
+    )
     @Bean(
+            name = "rediSearchIndexer"
+    )
+    @ConditionalOnMissingBean(
             name = "rediSearchIndexer"
     )
     public RediSearchIndexer redisearchIndexer(ApplicationContext ac, //
                                                RedisOMProperties properties, //
                                                @Qualifier(
                                                        "omGsonBuilder"
-                                               ) GsonBuilder gsonBuilder) {
+                                               ) GsonBuilder gsonBuilder, //
+                                               RedisModulesOperations<?> redisModulesOperations, //
+                                               @Qualifier(
+                                                       "redisEnhancedMappingContext"
+                                               ) RedisMappingContext mappingContext) {
 
-        return new RediSearchIndexer(ac, properties, gsonBuilder);
+        return new RediSearchIndexer(ac, properties, gsonBuilder, (RedisModulesOperations<String>) redisModulesOperations,
+                mappingContext);
     }
 
     /**
@@ -308,7 +349,7 @@ public class RedisOMAutoConfiguration {
      * and Java entity objects, providing seamless persistence operations for
      * document-based data models.
      *
-     * @param redisTemplate          the Redis operations template
+     * @param redisTemplate               the Redis operations template
      * @param redisModulesOperations the Redis modules operations for JSON
      * @param mappingContext         the Redis mapping context
      * @param indexer                the search indexer for creating indexes
@@ -345,7 +386,7 @@ public class RedisOMAutoConfiguration {
      * building on the JSON key-value adapter to offer repository-style functionality
      * for document-based entities.
      *
-     * @param redisTemplate          the Redis operations template
+     * @param redisTemplate               the Redis operations template
      * @param redisModulesOperations the Redis modules operations for JSON
      * @param mappingContext         the Redis mapping context
      * @param indexer                the search indexer for creating indexes
@@ -382,7 +423,7 @@ public class RedisOMAutoConfiguration {
      * as Redis hashes, supporting field-level operations and RediSearch capabilities
      * for hash-based data models.
      *
-     * @param redisTemplate          the Redis operations template
+     * @param redisTemplate               the Redis operations template
      * @param redisModulesOperations the Redis modules operations for enhanced features
      * @param mappingContext         the Redis mapping context
      * @param indexer                the search indexer for creating indexes
@@ -468,6 +509,62 @@ public class RedisOMAutoConfiguration {
         RediSearchIndexer indexer = (RediSearchIndexer) ac.getBean("rediSearchIndexer");
         indexer.createIndicesFor(Document.class);
         indexer.createIndicesFor(RedisHash.class);
+
+        // Create indexes from repository-level @IndexingOptions annotations
+        createRepoLevelIndexes(ac, indexer);
+    }
+
+    @SuppressWarnings(
+            "rawtypes"
+    )
+    private void createRepoLevelIndexes(ApplicationContext ac, RediSearchIndexer indexer) {
+        Set<Class<?>> repoInterfaces = new HashSet<>();
+
+        // Scan repository beans for @IndexingOptions on their interfaces
+        try {
+            Map<String, RedisDocumentRepository> docRepos = ac.getBeansOfType(RedisDocumentRepository.class);
+            for (RedisDocumentRepository repo : docRepos.values()) {
+                collectIndexingOptionsInterfaces(repo, repoInterfaces);
+            }
+        } catch (Exception e) {
+            logger.debug("Could not scan document repository beans: " + e.getMessage());
+        }
+
+        try {
+            Map<String, RedisEnhancedRepository> enhancedRepos = ac.getBeansOfType(RedisEnhancedRepository.class);
+            for (RedisEnhancedRepository repo : enhancedRepos.values()) {
+                collectIndexingOptionsInterfaces(repo, repoInterfaces);
+            }
+        } catch (Exception e) {
+            logger.debug("Could not scan enhanced repository beans: " + e.getMessage());
+        }
+
+        // Also try classpath scanning as a fallback
+        repoInterfaces.addAll(getRepositoryInterfacesWithIndexingOptions(ac));
+
+        for (Class<?> repoInterface : repoInterfaces) {
+            IndexingOptions options = repoInterface.getAnnotation(IndexingOptions.class);
+            if (options != null && !options.indexName().isBlank()) {
+                Class<?> entityClass = resolveEntityTypeFromRepository(repoInterface, RedisDocumentRepository.class);
+                if (entityClass == null) {
+                    entityClass = resolveEntityTypeFromRepository(repoInterface, RedisEnhancedRepository.class);
+                }
+                if (entityClass != null) {
+                    logger.info(String.format("Creating repo-level index for %s from repository %s", entityClass.getSimpleName(),
+                            repoInterface.getSimpleName()));
+                    indexer.createIndexFor(entityClass, options);
+                }
+            }
+        }
+    }
+
+    private void collectIndexingOptionsInterfaces(Object bean, Set<Class<?>> result) {
+        for (Class<?> iface : bean.getClass().getInterfaces()) {
+            IndexingOptions options = iface.getAnnotation(IndexingOptions.class);
+            if (options != null) {
+                result.add(iface);
+            }
+        }
     }
 
     /**

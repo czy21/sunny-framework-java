@@ -11,6 +11,4 @@ dependencies {
     api 'org.springframework:spring-web'
 
     api "software.amazon.awssdk:s3"
-    api 'io.minio:minio'
-    api 'com.aliyun.oss:aliyun-sdk-oss'
 }
