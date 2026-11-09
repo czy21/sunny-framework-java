@@ -1,4 +1,4 @@
-package com.sunny.framework.cache;
+package com.sunny.framework.redis.om;
 
 import com.github.f4b6a3.ulid.Ulid;
 import com.google.gson.GsonBuilder;
@@ -44,7 +44,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.mapping.RedisMappingContext;
 import org.springframework.lang.Nullable;

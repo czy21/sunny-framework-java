@@ -22,6 +22,7 @@ dependencies {
         api project(":sunny-framework-bundle")
         api project(":sunny-framework-core")
         api project(":sunny-framework-cache")
+        api project(":sunny-framework-redis-om")
         api project(":sunny-framework-db")
         api project(":sunny-framework-doc")
         api project(":sunny-framework-file")

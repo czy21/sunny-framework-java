@@ -1,1 +1,0 @@
-org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=com.sunny.framework.cache.RedisExcludeFilter

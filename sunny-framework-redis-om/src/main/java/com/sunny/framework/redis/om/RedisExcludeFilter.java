@@ -1,4 +1,4 @@
-package com.sunny.framework.cache;
+package com.sunny.framework.redis.om;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;

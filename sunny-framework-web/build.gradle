@@ -11,12 +11,15 @@ dependencies {
             "io.github.mweirauch:micrometer-jvm-extras"
 
     api "org.springframework.cloud:spring-cloud-starter-openfeign"
-
     api "io.github.openfeign:feign-jackson3"
 
     api "org.springframework.cloud:spring-cloud-starter-loadbalancer"
-    api 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config'
-    api "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery"
+
+//    api 'org.springframework.cloud:spring-cloud-starter-consul-config'
+//    api 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
+//
+//    api 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config'
+//    api "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery"
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-restclient-test'

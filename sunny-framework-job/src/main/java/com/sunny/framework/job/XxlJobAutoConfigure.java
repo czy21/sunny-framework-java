@@ -15,7 +15,6 @@ import org.springframework.context.annotation.PropertySource;
 @EnableConfigurationProperties(XxlJobProperties.class)
 @Configuration(proxyBeanMethods = false)
 public class XxlJobAutoConfigure {
-    private static final Logger logger = LoggerFactory.getLogger(XxlJobAutoConfigure.class);
 
     private final XxlJobProperties properties;
 
