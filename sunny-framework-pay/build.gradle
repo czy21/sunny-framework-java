@@ -3,5 +3,7 @@ plugins {
 }
 
 dependencies {
+    api project(":sunny-framework-cache")
     api 'com.paypal.sdk:paypal-server-sdk'
+    api "org.springframework.cloud:spring-cloud-starter-openfeign"
 }

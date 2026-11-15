@@ -7,8 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 
 @Data
-@ConfigurationProperties(prefix = PayPalProperties.PREFIX)
-public class PayPalProperties {
+@ConfigurationProperties(prefix = PaypalProperties.PREFIX)
+public class PaypalProperties {
 
     public static final String PREFIX = "sunny.pay.paypal";
 
@@ -18,4 +18,5 @@ public class PayPalProperties {
     private Level logLevel = Level.DEBUG;
     private String returnUrl;
     private String cancelUrl;
+    private String webhookId;
 }
