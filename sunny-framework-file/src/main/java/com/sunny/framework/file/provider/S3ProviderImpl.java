@@ -4,7 +4,9 @@ import com.sunny.framework.file.FiletProperties;
 import com.sunny.framework.file.model.FileEntity;
 import com.sunny.framework.file.model.FileResult;
 import com.sunny.framework.file.repository.FileRepository;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -25,6 +27,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 public class S3ProviderImpl extends AbstractFileProvider implements FileProvider {
 
@@ -34,10 +37,10 @@ public class S3ProviderImpl extends AbstractFileProvider implements FileProvider
         super(target, fileRepository);
         S3ClientBuilder s3ClientBuilder = S3Client.builder()
                 .endpointOverride(URI.create(target.getRoot()))
-                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(target.getAccessKey(), target.getAccessKeySecret())));
-        s3ClientBuilder = s3ClientBuilder.region(Region.of(target.getRegion()));
-        s3ClientBuilder = s3ClientBuilder.forcePathStyle(true);
-        s3ClientBuilder = s3ClientBuilder.addPlugin(LegacyMd5Plugin.create());
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(target.getAccessKey(), target.getSecretKey())))
+                .region(Region.of(target.getRegion()))
+                .forcePathStyle(true)
+                .addPlugin(LegacyMd5Plugin.create());
         s3Client = s3ClientBuilder.build();
     }
 
@@ -66,9 +69,17 @@ public class S3ProviderImpl extends AbstractFileProvider implements FileProvider
 
     @Override
     public String get(String path, Duration expire) {
+        if (StringUtils.hasText(target.getPublicUrl())) {
+            return UriComponentsBuilder
+                    .fromUriString(target.getPublicUrl())
+                    .pathSegment(path.split("/"))
+                    .build()
+                    .encode()
+                    .toUriString();
+        }
         S3Presigner.Builder presignerBuilder = S3Presigner.builder()
                 .endpointOverride(URI.create(target.getRoot()))
-                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(target.getAccessKey(), target.getAccessKeySecret())))
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(target.getAccessKey(), target.getSecretKey())))
                 .serviceConfiguration(
                         S3Configuration.builder()
                                 .pathStyleAccessEnabled(true)
@@ -80,9 +91,14 @@ public class S3ProviderImpl extends AbstractFileProvider implements FileProvider
                     .bucket(target.getPath())
                     .key(path)
                     .build();
-            PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(builder -> builder.signatureDuration(expire).getObjectRequest(getObjectRequest));
+            PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(builder -> builder.signatureDuration(Optional.ofNullable(expire).orElse(target.getSignatureDuration())).getObjectRequest(getObjectRequest));
             return presignedRequest.url().toString();
         }
+    }
+
+    @Override
+    public String get(String path) {
+        return get(path, null);
     }
 
     @Override

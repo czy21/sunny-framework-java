@@ -24,7 +24,7 @@ public class FileAutoConfigure {
 
             targets.values().forEach(target -> {
                 target.setAccessKey(StringUtils.defaultIfEmpty(target.getAccessKey(), properties.getAccessKey()));
-                target.setAccessKeySecret(StringUtils.defaultIfEmpty(target.getAccessKeySecret(), properties.getAccessKeySecret()));
+                target.setSecretKey(StringUtils.defaultIfEmpty(target.getSecretKey(), properties.getSecretKey()));
             });
 
             return targets;
