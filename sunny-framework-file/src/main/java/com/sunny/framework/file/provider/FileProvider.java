@@ -24,6 +24,10 @@ public interface FileProvider {
         return null;
     }
 
+    default String get(String path) {
+        return null;
+    }
+
     default void del(String path) {
     }
 
